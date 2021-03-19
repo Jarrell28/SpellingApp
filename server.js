@@ -114,7 +114,7 @@ app.get('/random', (req, res) => {
     for (let i = 0; i < 10; i++) {
         promises.push(
             axios.request(options).then(function (response) {
-                words.push(response.data.word);
+                words.push(response.data);
             })
         )
     }

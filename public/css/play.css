@@ -1,0 +1,144 @@
+#play {
+    height: 500px;
+    margin: 50px auto 0;
+    max-width: 1000px;
+}
+
+.play-container {
+    display: flex;
+    height: 100%;
+    width: 100%;
+    background: #fff;
+    border-radius: 20px;
+}
+
+.play-menu {
+    display: flex;
+    flex-direction: column;
+    flex: .3;
+    border-right: 2px solid #25A4E7;
+    height: 100%;
+}
+
+.play-menu li{
+    font-size: 16px;
+    text-transform: uppercase;
+    color: #25A4E7;
+    /* border-top: 2px solid #25A4E7; */
+    border-bottom: 2px solid #25A4E7;
+    padding: 20px 0 20px 15px;
+    cursor: pointer;
+    position: relative;
+    z-index: 1;
+    transition: all .5s;
+}
+
+.play-menu li:hover {
+    color: #fff;
+    background: #25A4E7;
+}
+
+
+.play-game {
+    flex: 1;
+    position: relative;
+    padding: 20px;
+    font-size: 25px;
+    color: #25A4E7;
+}
+
+.loading {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: none;
+    z-index: 9999;
+}
+
+.loading p {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.play-opening {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    /* display: none; */
+}
+
+.play-opening h2 {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 50px;
+    color: #25A4E7;
+}
+
+.play-start {
+    display: none;
+    flex-direction: column;
+    height: 100%;
+    justify-content: space-between;
+}
+
+.play-start-header {
+    display: flex;
+    justify-content: space-between;
+}
+
+.play-start-word {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#word {
+    display: none;
+    margin-top: 15px;
+}
+
+#definition {
+    font-size: 18px;
+    margin: 15px 0;
+}
+
+#next {
+    background-color: #25A4E7;
+    color: #fff;
+    outline: none;
+    border: 0;
+    border-radius: 7px;
+    padding: 5px 7px;
+    display: none;
+}
+
+.play-start-spelling {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#spelling {
+    border: 1px solid #25A4E7;
+    border-top-left-radius: 7px;
+    border-bottom-left-radius: 7px;
+    padding: 5px 7px;
+    height: 40px;
+    color: #25A4E7;
+}
+
+#check {
+    background-color: #25A4E7;
+    color: #fff;
+    font-size: 16px;
+    text-transform: uppercase;
+    outline: none;
+    border-top-right-radius: 7px;
+    border-bottom-right-radius: 7px;
+    height: 40px;
+    border: none;
+}

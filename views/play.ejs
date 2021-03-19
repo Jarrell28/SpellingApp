@@ -1,36 +1,145 @@
-<h1>
-    <!-- <%= foo %> -->
-    yooo
-    <button id="getWords">Fetch Words</button>
-</h1>
+<section id="play">
+    <div class="play-container">
+        <div class="play-menu">
+            <ul>
+                <li id="play-random">Play Random Words</li>
+                <li id="play-favorites">Play Favorites</li>
+                <li id="play-custom">Play Custom</li>
+            </ul>
+        </div>
+        <div class="play-game">
+            <div class="loading">
+                <p>LOADING...</p>
+            </div>
+
+            <div class="play-opening">
+                <h2>SELECT GAME</h2>
+            </div>
+
+            <div class="play-start">
+                <div class="play-start-header">
+                    <p>Score: <span id="score">0</span> / <span id="score-max">10</span></p>
+                    <p id="speaker">Speaker</p>
+                </div>
+                <div class="play-start-word">
+                    <p id="result"></p>
+                    <p id="word">word</p>
+                    <p id="definition"><strong>Definition:</strong> <span id="definition-val">Definition</span></p>
+                    <button id="next">Next</button>
+                </div>
+
+                <div class="play-start-spelling">
+                    <input id="spelling" type="text" />
+                    <input id="check" type="submit" value="Check">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
 
 <script>
+    //Browser Speech API
+    const speech = window.speechSynthesis;
+    const voices = speech.getVoices();
 
-    // const settings = {
-    //     "async": true,
-    //     "crossDomain": true,
-    //     "url": "https://wordsapiv1.p.rapidapi.com/words/?random=true",
-    //     "method": "GET",
-    //     "headers": {
-    //         "x-rapidapi-key": "016436572fmsh2d3895bdba8f47bp101251jsna5e1f946890f",
-    //         "x-rapidapi-host": "wordsapiv1.p.rapidapi.com"
-    //     }
-    // };
+    class playGame {
+        constructor() {
+            this.words = [];
+            this.score = 0;
+            this.playing = false;
+            this.currentWord = 0;
+        }
 
-    // $.ajax(settings).done(function (response) {
-    //     console.log(response);
-    // });
+        //Function to compare if input is correct
+        checkSpelling = () => {
+            const userSpelling = $("#spelling").val();
+            const currentWord = this.words[this.currentWord].word;
+            $("#result").show();
 
-    $("#getWords").on("click", function () {
-
-        $.ajax({
-            method: "GET",
-            url: "/random",
-            success: function (res) {
-                console.log(res);
+            if (userSpelling === currentWord) {
+                $("#result").html("Correct!");
+                this.score++;
+                $("#score").html(this.score);
+            } else {
+                $("#result").html("Wrong!");
             }
-        })
-    })
+
+            $("#next").show();
+            $("#word").show();
+        }
+
+        //Display Next Word
+        nextWord = () => {
+            $("#spelling").val('');
+            this.currentWord++;
+            $("#word").html(this.words[this.currentWord].word);
+            $("#definition-val").html(this.words[this.currentWord].results[0].definition);
+            $("#next").hide();
+            $("#word").hide();
+            $("#result").html("").hide();
+        }
+
+        //Function to reset game
+        resetGame() {
+            this.words = [];
+            this.score = 0;
+            this.playing = false;
+            this.currentWord = 0;
+            $(".play-opening").show();
+            $(".play-start").hide();
+            $("#spelling").val('');
+        }
+        //Function to start game
+        startGame() {
+            this.playing = true;
+            $(".play-opening").hide();
+            $(".play-start").css("display", "flex");
+            $("#word").html(this.words[this.currentWord].word);
+            $("#definition-val").html(this.words[this.currentWord].results[0].definition);
+            $("#score").html(this.score);
+            $("#score-max").html(this.words.length);
+        }
+
+        //Function to fetch random words
+        getRandom = () => {
+            if (this.playing) return this.resetGame();
+            $(".play-opening").hide();
+            $(".loading").show();
+            $.ajax({
+                method: "GET",
+                url: "/random",
+                success: (res) => {
+                    this.words = res;
+                    console.log(this.words);
+                    $(".loading").hide();
+                    this.startGame();
+                }
+            })
+        }
+        //Function to fetch favorite words
+        //Function to fetch custom words
+        //Function to play with same words
+        //Function to play with different words
+
+        //Speak word
+        speak = () => {
+            let message = new SpeechSynthesisUtterance(this.words[this.currentWord].word);
+            message.voice = voices[0];
+            speech.speak(message);
+        }
+    };
+
+
+
+    const game = new playGame();
+
+    //Event handlers
+    $("#play-random").on("click", game.getRandom);
+    $("#check").on("click", game.checkSpelling);
+    $("#speaker").on("click", game.speak);
+    $("#next").on("click", game.nextWord);
+
 
 
 </script>

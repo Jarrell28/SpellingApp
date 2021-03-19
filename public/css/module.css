@@ -30,3 +30,7 @@
 #navbar #nav-menu li:first-of-type {
     margin-left: 0;
 }
+
+.container {
+    margin: 0 30px;
+}
