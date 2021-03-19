@@ -1,0 +1,32 @@
+
+/*Navbar*/
+#navbar {
+    position: relative;
+    color: #fff;
+    padding-top: 20px;
+}
+
+#navbar h1 {
+    position: absolute;
+    width: 100%;
+    top: 20px;
+    left: 0;
+    text-align: center;
+    font-size: 50px;
+}
+
+#navbar #nav-menu {
+    display: flex;
+    justify-content: flex-end;
+    position: relative;
+    z-index: 1;
+}
+
+#navbar #nav-menu li {
+    margin: 10px;
+    font-size: 20px;
+}
+
+#navbar #nav-menu li:first-of-type {
+    margin-left: 0;
+}

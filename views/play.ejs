@@ -1,0 +1,36 @@
+<h1>
+    <!-- <%= foo %> -->
+    yooo
+    <button id="getWords">Fetch Words</button>
+</h1>
+
+<script>
+
+    // const settings = {
+    //     "async": true,
+    //     "crossDomain": true,
+    //     "url": "https://wordsapiv1.p.rapidapi.com/words/?random=true",
+    //     "method": "GET",
+    //     "headers": {
+    //         "x-rapidapi-key": "016436572fmsh2d3895bdba8f47bp101251jsna5e1f946890f",
+    //         "x-rapidapi-host": "wordsapiv1.p.rapidapi.com"
+    //     }
+    // };
+
+    // $.ajax(settings).done(function (response) {
+    //     console.log(response);
+    // });
+
+    $("#getWords").on("click", function () {
+
+        $.ajax({
+            method: "GET",
+            url: "/random",
+            success: function (res) {
+                console.log(res);
+            }
+        })
+    })
+
+
+</script>
