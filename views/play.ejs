@@ -26,6 +26,7 @@
                     <p id="word">word</p>
                     <p id="definition"><strong>Definition:</strong> <span id="definition-val">Definition</span></p>
                     <button id="next">Next</button>
+                    <button id="play-again">Play Again</button>
                 </div>
 
                 <div class="play-start-spelling">
@@ -65,8 +66,11 @@
                 $("#result").html("Wrong!");
             }
 
-            $("#next").show();
+            if ((this.currentWord + 1) !== this.words.length) {
+                $("#next").show();
+            }
             $("#word").show();
+            this.endGame();
         }
 
         //Display Next Word
@@ -78,6 +82,7 @@
             $("#next").hide();
             $("#word").hide();
             $("#result").html("").hide();
+            this.speak();
         }
 
         //Function to reset game
@@ -89,7 +94,12 @@
             $(".play-opening").show();
             $(".play-start").hide();
             $("#spelling").val('');
+            $("#next").hide();
+            $("#word").hide();
+            $("#play-again").hide();
+            $("#result").html("").hide();
         }
+
         //Function to start game
         startGame() {
             this.playing = true;
@@ -99,6 +109,7 @@
             $("#definition-val").html(this.words[this.currentWord].results[0].definition);
             $("#score").html(this.score);
             $("#score-max").html(this.words.length);
+            this.speak();
         }
 
         //Function to fetch random words
@@ -117,12 +128,30 @@
                 }
             })
         }
+
+        //End of Game
+        endGame() {
+            //Game is over
+            if ((this.currentWord + 1) === this.words.length) {
+                $("#play-again").show();
+            }
+        }
+
+        //Play again
+        playAgain = () => {
+            $("#play-again").hide();
+            $("#word").hide();
+            $("#result").hide();
+            this.currentWord = 0;
+            this.score = 0;
+            $("#spelling").val('');
+            this.startGame();
+        }
+
         //Function to fetch favorite words
         //Function to fetch custom words
-        //Function to play with same words
-        //Function to play with different words
 
-        //Speak word
+        //Browser API to say currently selected word
         speak = () => {
             let message = new SpeechSynthesisUtterance(this.words[this.currentWord].word);
             message.voice = voices[0];
@@ -131,7 +160,7 @@
     };
 
 
-
+    //Initializing game class
     const game = new playGame();
 
     //Event handlers
@@ -139,7 +168,7 @@
     $("#check").on("click", game.checkSpelling);
     $("#speaker").on("click", game.speak);
     $("#next").on("click", game.nextWord);
-
+    $("#play-again").on("click", game.playAgain);
 
 
 </script>

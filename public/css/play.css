@@ -106,7 +106,7 @@
     margin: 15px 0;
 }
 
-#next {
+#next, #play-again {
     background-color: #25A4E7;
     color: #fff;
     outline: none;
