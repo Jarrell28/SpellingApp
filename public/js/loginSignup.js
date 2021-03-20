@@ -20,7 +20,7 @@ $("#login").on("submit", function (e) {
     }).done(response => {
         if (response.status === "success") {
             window.location.href = "/";
-        } else if (response.status === "failure") {
+        } else if (response.status === "failed") {
             alert(response.error);
         } else {
             alert("Something went wrong!");

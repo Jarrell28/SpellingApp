@@ -12,7 +12,7 @@ const port = process.env.PORT || 3000;
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static(__dirname + '/public'));
-app.use(session({ secret: process.env.SESSIONSECRET, cookie: { maxAge: 60000 } }))
+app.use(session({ secret: process.env.SESSIONSECRET }))
 
 //Template Engine
 app.set('view engine', 'ejs');
@@ -82,8 +82,8 @@ app.post('/signup', (request, response) => {
     client.query("SELECT * FROM users WHERE email = $1::text LIMIT 1", [email], (err, results) => {
         if (err) return console.log(err);
 
-        if (results.rows > 0) {
-            response.json({ status: "failed", error: "That email already exists!" })
+        if (results.rows) {
+            return response.json({ status: "failed", error: "That email already exists!" })
         } else {
 
             client.query("INSERT INTO users (username, email, password) VALUES($1, $2, $3)", [username, email, password], (err, results) => {
@@ -153,6 +153,7 @@ app.get('/favorites/user', (req, res) => {
     })
 })
 
+
 //Gets Custom words for page
 app.get('/custom', (req, res) => {
     if (!req.session.user) {
@@ -178,6 +179,24 @@ app.get('/custom/user', (req, res) => {
         if (err) res.status(400).json({ error: "Error occurred fetching sets" });
 
         res.status(200).json(results.rows);
+    })
+})
+
+//Add custom word for active user
+app.post('/custom/user', (req, res) => {
+    if (!req.session.user) {
+        return res.redirect("/login");
+    }
+    const id = req.session.user.id;
+    const newWord = req.body.newWord;
+
+    client.query("INSERT INTO custom_sets (words, user_id) VALUES ($1, $2)", [newWord, id], (err, results) => {
+        if (err) return console.log(err);
+
+        client.query("SELECT * FROM custom_sets WHERE user_id = $1", [id], (err, results) => {
+            if (err) return console.log(err);
+            res.json(results.rows);
+        })
     })
 })
 

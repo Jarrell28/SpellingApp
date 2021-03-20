@@ -1,0 +1,75 @@
+<%- include('partials/header'); -%>
+    <%- include('partials/navbar'); -%>
+        <section id="custom">
+            <div class="custom-container">
+                <div class="custom-menu">
+                    <ul>
+                        <li id="addNew">Add new Word +</li>
+                        <% custom.forEach(word=> { %>
+                            <li class="word" data-id=<%=word.id %>><%= word.words %>
+                            </li>
+                            <% }) %>
+                    </ul>
+                </div>
+
+                <div class="custom-form">
+                    <h2>Add Word</h2>
+
+                    <form id="newForm" action="">
+                        <input id="newWord" type="text" placeholder="New Word">
+                        <button type="submit">Add</button>
+                    </form>
+
+                    <form id="editForm" action="">
+                        <input id="editWord" type="text" placeholder="Word">
+                        <input id="editWordId" type="hidden" value="">
+                        <button type="submit">Update</button>
+                        <button type="submit">DELETE</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <script>
+
+            $("#newForm").on("submit", function (e) {
+                e.preventDefault();
+                const newWord = $("#newWord").val();
+
+                $.ajax({
+                    type: "POST",
+                    url: "/custom/user",
+                    data: { newWord: newWord }
+                }).done(response => {
+                    const words = response;
+
+                    const mappedWords = words.map(word => {
+                        return `<li class='word' data-id=${word.id}>${word.words}</li>`
+                    }).join("");
+
+                    $(".custom-menu ul").empty().append("<li id='addNew'>Add new Word +</li>").append(mappedWords);
+                })
+
+            })
+
+            $(".word").on("click", function (e) {
+                $(".custom-form h2").html("Edit Word");
+                $("#editWord").val($(this).html());
+                $("#editWordId").val($(this).attr("data-id"));
+                $("#newForm").hide();
+                $("#editForm").css("display", "flex");
+            });
+
+            $("#addNew").on("click", function (e) {
+                $(".custom-form h2").html("Add Word");
+                $("#newWord").val("");
+                $("#newForm").show();
+                $("#editForm").hide();
+            })
+
+
+
+        </script>
+
+
+        <%- include('partials/footer'); -%>

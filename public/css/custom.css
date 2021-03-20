@@ -1,0 +1,90 @@
+#custom {
+    height: 500px;
+    margin: 50px auto 0;
+    max-width: 1000px;
+}
+
+.custom-container {
+    display: flex;
+    height: 100%;
+    width: 100%;
+    background: #fff;
+    border-radius: 20px;
+}
+
+.custom-menu {
+    display: flex;
+    flex-direction: column;
+    flex: .3;
+    border-right: 2px solid #25A4E7;
+    height: 100%;
+    overflow-y: scroll;
+
+}
+
+.custom-menu::-webkit-scrollbar {
+    display: none;
+  }
+
+.custom-menu li{
+    font-size: 16px;
+    text-transform: uppercase;
+    color: #25A4E7;
+    /* border-top: 2px solid #25A4E7; */
+    border-bottom: 2px solid #25A4E7;
+    padding: 20px 0 20px 15px;
+    cursor: pointer;
+    position: relative;
+    z-index: 1;
+    transition: all .5s;
+}
+
+.custom-menu li:hover {
+    color: #fff;
+    background: #25A4E7;
+}
+
+.custom-form {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    margin-top: 20px;
+    color: #25A4E7;
+}
+
+.custom-form h2 {
+    text-align: center;
+    font-size: 30px;
+}
+
+.custom-form form {
+    display: flex;
+    justify-content: center;
+    margin-top: 90px;
+}
+
+.custom-form form input {
+    width: 100%;
+    max-width: 300px;
+    padding: 10px 7px;
+    margin-right: 10px;
+    border-radius: 4px;
+    border:1px solid lightgray;
+    
+}
+
+.custom-form form button {
+    background-color: #25A4E7;
+    color: #fff;
+    font-size: 16px;
+    text-transform: uppercase;
+    outline: none;
+    border-radius: 4px;
+    height: 40px;
+    border: none;
+
+}
+
+#editForm {
+    display: none;
+}
