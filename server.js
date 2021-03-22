@@ -76,7 +76,7 @@ app.post('/login', (request, response) => {
         if (err) return console.log(err);
 
         //If no email, alerts error on client side
-        if (!results.rows) {
+        if (results.rows.length === 0) {
             response.json({ status: "failed", error: "That email does not exist!" })
         } else {
             const user = results.rows[0];
