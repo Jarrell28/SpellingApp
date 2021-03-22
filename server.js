@@ -104,7 +104,7 @@ app.post('/signup', (request, response) => {
         if (err) return console.log(err);
 
         //If user already exists, alert error on client side
-        if (results.rows) {
+        if (results.rows.length > 0) {
             return response.json({ status: "failed", error: "That email already exists!" })
         } else {
             //Creates the new user
