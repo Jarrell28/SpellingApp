@@ -8,7 +8,7 @@
         </div>
         <div class="play-game">
             <div class="loading">
-                <p>LOADING...</p>
+                <p>Fetching Words...</p>
             </div>
 
             <div class="play-opening">
@@ -17,15 +17,16 @@
 
             <div class="play-start">
                 <div class="play-start-header">
+                    <p id="back"><i class="fas fa-arrow-left"></i></p>
                     <p>Score: <span id="score">0</span> / <span id="score-max">10</span></p>
-                    <p id="speaker">Speaker</p>
+                    <p id="speaker"><i class="fas fa-volume-up"></i></p>
                 </div>
                 <div class="play-start-word">
                     <p id="result"></p>
                     <p id="word">word</p>
                     <p id="definition"><strong>Definition:</strong> <span id="definition-val">Definition</span></p>
-                    <button id="next">Next</button>
-                    <button id="play-again">Play Again</button>
+                    <button id="next">Next <i class="fas fa-arrow-right"></i></button>
+                    <button id="play-again">Play Again <i class="fas fa-redo"></i></button>
                 </div>
 
                 <div class="play-start-spelling">
@@ -43,6 +44,7 @@
     const speech = window.speechSynthesis;
     const voices = speech.getVoices();
 
+    //Class to play game
     class playGame {
         constructor() {
             this.words = [];
@@ -55,24 +57,32 @@
         checkSpelling = () => {
             const userSpelling = $("#spelling").val();
             const currentWord = this.words[this.currentWord].word;
-            $("#result").show();
 
+
+            //Conditional to check if word is correct
             if (userSpelling === currentWord) {
-                $("#result").html("Correct!");
+                $("#result").html("<i class='fas fa-check'></i>");
                 this.score++;
                 $("#score").html(this.score);
             } else {
-                $("#result").html("Wrong!");
+                $("#result").html("<i class='fas fa-times'></i>");
             }
 
+            //Shows the results of check
+            $("#result").show();
+
+            //Check current word is the last word
+            //If not, it will display next button
             if ((this.currentWord + 1) !== this.words.length) {
                 $("#next").show();
             }
+
+            //Shows the current word when checking if correct
             $("#word").show();
             this.endGame();
         }
 
-        //Display Next Word
+        //Display Next Word UI and word value
         nextWord = () => {
             $("#spelling").val('');
             this.currentWord++;
@@ -85,7 +95,7 @@
         }
 
         //Function to reset game
-        resetGame() {
+        resetGame = () => {
             this.words = [];
             this.score = 0;
             this.playing = false;
@@ -97,6 +107,8 @@
             $("#word").hide();
             $("#play-again").hide();
             $("#result").html("").hide();
+
+            this.resetMobileUi();
         }
 
         //Function to start game
@@ -111,17 +123,15 @@
             this.speak();
         }
 
-
-
         //End of Game
         endGame() {
-            //Game is over
+            //Game is over, show play again button
             if ((this.currentWord + 1) === this.words.length) {
                 $("#play-again").show();
             }
         }
 
-        //Play again
+        //Plays same words received from API
         playAgain = () => {
             $("#play-again").hide();
             $("#word").hide();
@@ -132,17 +142,22 @@
             this.startGame();
         }
 
-        //Function to fetch random words
+        //Function to fetch random words from API
         getRandom = () => {
+            //If in middle of game and user hits menu, ends current game 
             if (this.playing) return this.resetGame();
+            this.mobileUi();
             $(".play-opening").hide();
+            //Display Loading screen
             $(".loading").show();
+
             $.ajax({
                 method: "GET",
                 url: "/random",
-                success: (res) => {
-                    this.words = res;
-                    console.log(this.words);
+                success: (response) => {
+                    //Updates playGame array with words received from API
+                    this.words = response;
+                    //Remove loading screen
                     $(".loading").hide();
                     this.startGame();
                 }
@@ -151,16 +166,24 @@
 
         //Function to fetch custom words
         getCustom = () => {
+            //If in middle of game and user hits menu, ends current game
             if (this.playing) return this.resetGame();
+            this.mobileUi();
             $(".play-opening").hide();
+
+            //Display Loading screen
             $(".loading").show();
             $.ajax({
                 method: "GET",
                 url: "/custom/game",
             }).done(response => {
+                //If the user isn't logged in, redirects to login page
                 if (response.status === "failure") return window.location.href = "/login";
 
+                //Updates playGame array with words received from API
                 this.words = response;
+
+                //Hides Loading screen
                 $(".loading").hide();
                 this.startGame();
             })
@@ -171,6 +194,22 @@
             let message = new SpeechSynthesisUtterance(this.words[this.currentWord].word);
             message.voice = voices[0];
             speech.speak(message);
+        }
+
+        //Check window size to show mobile game UI
+        mobileUi() {
+            if ($(window).width() < 725) {
+                $(".play-game").show();
+                $(".play-menu").hide();
+            }
+        }
+
+        //Check window size to show mobile menu UI
+        resetMobileUi() {
+            if ($(window).width() < 725) {
+                $(".play-game").hide();
+                $(".play-menu").css("display", "flex");
+            }
         }
     };
 
@@ -185,6 +224,7 @@
     $("#speaker").on("click", game.speak);
     $("#next").on("click", game.nextWord);
     $("#play-again").on("click", game.playAgain);
+    $("#back").on("click", game.resetGame);
 
 
 </script>

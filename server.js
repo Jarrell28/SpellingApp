@@ -4,8 +4,6 @@ const express = require('express');
 const { Client } = require('pg');
 const axios = require('axios');
 const session = require('express-session');
-const { json } = require("express");
-
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -28,6 +26,7 @@ client.connect(err => {
     }
 });
 
+//If a user is logged in, passes session details to all pages of application
 app.all("/*", function (req, res, next) {
     if (req.session.user) {
         res.locals.user = req.session.user;
@@ -35,67 +34,88 @@ app.all("/*", function (req, res, next) {
     next();
 })
 
+
+//HTML ROUTES
+
+//Home Page
 app.get('/', (request, response) => {
-    response.render('index', { foo: 'FOO' });
+    response.render('index');
 })
 
+//Login Page
 app.get('/login', (request, response) => {
-    response.render('login', { foo: 'FOO' });
+    response.render('login');
 })
 
+//Signout Page
 app.get('/signout', (request, response) => {
+    //resets session details on signout
     request.session.destroy();
     response.locals.user = "";
     response.render('index');
 })
 
+//Signup Page
+app.get('/signup', (request, response) => {
+    response.render('signup');
+})
+
+//Database Query ROUTES
+
+//Login to account
 app.post('/login', (request, response) => {
     const email = request.body.email;
     const password = request.body.password;
 
+    //Checks if email exists in DB
     client.query("SELECT * FROM users WHERE email = $1::text LIMIT 1", [email], (err, results) => {
         if (err) return console.log(err);
 
+        //If no email, alerts error on client side
         if (!results.rows) {
             response.json({ status: "failed", error: "That email does not exist!" })
         } else {
             const user = results.rows[0];
+            //If passwords do not match, alerts error on client side
             if (user.password !== password) {
                 response.json({ status: "failed", error: "The email/password combination does not exist!" })
             } else {
+                //Sets session user and sends user data to client
                 request.session.user = user;
-
                 response.status(200).json({ status: "success", user })
             }
         }
     });
 })
 
-app.get('/signup', (request, response) => {
-    response.render('signup', { foo: 'FOO' });
-})
 
+//Create an account
 app.post('/signup', (request, response) => {
     const username = request.body.username;
     const email = request.body.email;
     const password = request.body.password;
 
+    //Checks if user exists with that email
     client.query("SELECT * FROM users WHERE email = $1::text LIMIT 1", [email], (err, results) => {
         if (err) return console.log(err);
 
+        //If user already exists, alert error on client side
         if (results.rows) {
             return response.json({ status: "failed", error: "That email already exists!" })
         } else {
-
+            //Creates the new user
             client.query("INSERT INTO users (username, email, password) VALUES($1, $2, $3)", [username, email, password], (err, results) => {
                 if (err) return console.log(err);
 
+                //Makes another query to get the newly created user
                 client.query("SELECT * FROM users WHERE email = $1::text LIMIT 1", [email], (err, results) => {
                     if (err) return console.log(err);
 
+                    //If no results received, error in process
                     if (!results.rows) {
                         response.json({ status: "failure", error: "Something else went wrong" });
                     } else {
+                        //Received new user from query, set session details and send success to client
                         const user = results.rows[0];
                         request.session.user = user;
                         response.status(200).json({ status: "success" })
@@ -106,29 +126,11 @@ app.post('/signup', (request, response) => {
     });
 })
 
-//Gets All Users
-app.get('/users', (req, res) => {
-    client.query('SELECT * FROM users', (err, results) => {
-        if (err) res.status(400).json({ error: "Error occurred fetching users" });
-
-        res.status(200).json(results.rows);
-    })
-})
-
-//Get User by ID
-app.get('/user/:id', (req, res) => {
-    const id = parseInt(req.params.id);
-
-    client.query('SELECT * FROM users WHERE id = $1', [id], (err, results) => {
-        if (err) res.status(400).json({ error: "Error occurred fetching users" });
-
-        res.status(200).json(results.rows);
-    })
-})
 
 
-//Gets Custom words for page
+//Shows Custom Words page and Queries Custom words for current user
 app.get('/custom', (req, res) => {
+    //Redirects to login page if no user
     if (!req.session.user) {
         return res.redirect("/login");
     }
@@ -157,52 +159,68 @@ app.get('/custom/user', (req, res) => {
 
 
 
-//Add custom word for active user
+//Create new custom word for active user
 app.post('/custom/user', (req, res) => {
+    //Redirects to login page if no user
     if (!req.session.user) {
         return res.redirect("/login");
     }
     const id = req.session.user.id;
     const newWord = req.body.newWord;
 
+    //Creates new word in DB
     client.query("INSERT INTO custom_sets (words, user_id) VALUES ($1, $2)", [newWord, id], (err, results) => {
         if (err) return console.log(err);
 
+        //Queries all custom words for active user
         client.query("SELECT * FROM custom_sets WHERE user_id = $1", [id], (err, results) => {
             if (err) return console.log(err);
+
+            //Sends all words to client for list rerender
             res.json(results.rows);
         })
     })
 });
 
+//Route to DELETE custom word
 app.delete('/custom/:id', (req, res) => {
+    //Redirects to login page if no user
     if (!req.session.user) {
         return res.redirect("/login");
     }
     const id = req.params.id;
     const userId = req.session.user.id;
 
+    //Deletes custom word by ID
     client.query("DELETE FROM custom_sets WHERE id =$1", [id], (err, results) => {
         if (err) return console.log(err);
 
+        //Queries all custom words for active user
         client.query("SELECT * FROM custom_sets WHERE user_id = $1", [userId], (err, results) => {
             if (err) return console.log(err);
+
+            //Sends all words to client for list rerender
             res.json(results.rows);
         })
     })
 
 });
 
+//Updates custom word
 app.put('/custom/:id', (req, res) => {
-    console.log(req.body);
     const id = req.params.id;
     const word = req.body.word;
 
+    //Updates current word by id
     client.query("UPDATE custom_sets SET words=$1 WHERE id=$2 RETURNING *", [word, id], (err, results) => {
         if (err) return console.log(err);
+
+        //Sends the updated word to client for list rerender
         res.json(results.rows);
     })
 })
+
+//API ROUTES
 
 //Fetch 10 Random Words
 app.get('/random', (req, res) => {
@@ -210,6 +228,7 @@ app.get('/random', (req, res) => {
     const words = [];
     const promises = [];
 
+    //Axios option object for request
     const options = {
         method: 'GET',
         url: 'https://wordsapiv1.p.rapidapi.com/words/',
@@ -226,20 +245,27 @@ app.get('/random', (req, res) => {
         }
     };
 
+    //Loops 10 times to get 10 words
     for (let i = 0; i < 10; i++) {
+
+        //Adds the promise to promises array
         promises.push(
+
+            //Request to get words from API
             axios.request(options).then(function (response) {
                 words.push(response.data);
             })
         )
     }
 
+    //When all promises are finished from promises array, sends 10 words to client
     Promise.all(promises).then(() => res.status(200).json(words));
 
 })
 
-//Gets Sets for game
+//Fetches custom words for active user from DB, Makes API call to get definition of words
 app.get('/custom/game', (req, res) => {
+    //Redirects to login page if no user
     if (!req.session.user) {
         return res.json({ status: "failure" });
     }
@@ -247,14 +273,16 @@ app.get('/custom/game', (req, res) => {
     const words = [];
     const promises = [];
 
+    //Makes Query from DB
     client.query('SELECT * FROM custom_sets WHERE user_id = $1', [id], (err, results) => {
         if (err) res.status(400).json({ error: "Error occurred fetching sets" });
 
-
         let rows = results.rows;
 
+        //Loops results from DB query to fetch word defintion from API
         rows.forEach(word => {
 
+            //Axios option object for request
             const options = {
                 method: 'GET',
                 url: `https://wordsapiv1.p.rapidapi.com/words/${word.words}`,
@@ -264,22 +292,26 @@ app.get('/custom/game', (req, res) => {
                 }
             };
 
+            //Adds the promise to promises array
             promises.push(
+                //Request to get words from API
                 axios.request(options).then(function (response) {
                     words.push(response.data);
                 }).catch(function (error) {
+                    //If no definition is found for custom word, adds the word to object with empty definition
                     words.push({ word: word.words, results: [{ definition: "Definition not found" }] })
                 })
             )
         })
 
+        //When all promises are finished from promises array, sends 10 words to client
         Promise.all(promises).then(() => res.status(200).json(words));
 
     })
-
-    // console.log(words);
 })
 
+
+//Express port listener
 app.listen(port, () => {
     console.log(`App running on port ${port}.`)
 })

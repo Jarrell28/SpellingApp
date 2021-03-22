@@ -5,4 +5,6 @@
 body {
     min-height: 100vh;
     background-color: #25A4E7;
+    font-family: 'Comfortaa', cursive;
+    margin: 0 30px;
 }

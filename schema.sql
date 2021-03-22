@@ -17,14 +17,3 @@ CREATE TABLE custom_sets (
             REFERENCES users (ID) 
             ON DELETE CASCADE
 );
-
--- INSERT INTO users(username, email, password) VALUES ('Jarrell28', 'jhouston2882@gmail.com', 'password');
--- INSERT INTO users(username, email, password) VALUES ('Jarrell', 'jhouston2882@gmail.com', 'password');
-
--- INSERT INTO favorites (favorites, user_id) VALUES ('word1,word3', 2);
-
--- INSERT INTO custom_sets (words, user_id) VALUES ('word1,word2', 1);
-
--- SELECT * FROM favorites WHERE user_id = 1;
-
--- SELECT * FROM users INNER JOIN favorites ON users.id = favorites.user_id;

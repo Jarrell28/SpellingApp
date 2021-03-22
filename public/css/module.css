@@ -1,40 +1,25 @@
-
-/*Navbar*/
-#navbar {
-    position: relative;
+.navbar {
     color: #fff;
-    padding-top: 20px;
+    max-width: 1000px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
-#navbar h1 {
-    position: absolute;
-    width: 100%;
-    top: 20px;
-    left: 0;
-    text-align: center;
-    font-size: 50px;
+.navbar h1{
+    font-size: 30px;
 }
 
-#navbar #nav-menu {
-    display: flex;
-    justify-content: flex-end;
-    position: relative;
-    z-index: 1;
-}
-
-#navbar #nav-menu li {
-    margin: 10px;
+.navbar .nav-link {
+    color: #fff;
     font-size: 20px;
 }
 
-#navbar #nav-menu li:first-of-type {
-    margin-left: 0;
+.navbar .fa-bars {
+    color: #fff;
+    font-size: 30px;
 }
 
-.container {
-    margin: 0 30px;
-}
-
+/*Login and Sign up form */
 .login-signup {
     position: absolute;
     top: 50%;
@@ -85,4 +70,4 @@
     color: #25A4E7;
     text-decoration: underline;
     font-size: 18px;
-}
+} 

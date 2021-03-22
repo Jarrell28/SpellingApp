@@ -5,6 +5,7 @@
                 <div class="custom-menu">
                     <ul>
                         <li id="addNew">Add new Word +</li>
+                        <!-- Loops words received from database in a list -->
                         <% custom.forEach(word=> { %>
                             <li class="word" data-id=<%=word.id %>><%= word.words %>
                             </li>
@@ -13,6 +14,7 @@
                 </div>
 
                 <div class="custom-form">
+                    <p id="customBack"><i class="fas fa-arrow-left"></i></p>
                     <h2>Add Word</h2>
 
                     <form id="newForm" action="">
@@ -23,8 +25,10 @@
                     <form id="editForm" action="">
                         <input id="editWord" type="text" placeholder="Word">
                         <input id="editWordId" type="hidden" value="">
-                        <button id="editUpdate" type="submit">Update</button>
-                        <button id="editDelete" type="submit">DELETE</button>
+                        <div>
+                            <button id="editUpdate" type="submit">Update</button>
+                            <button id="editDelete" type="submit">DELETE</button>
+                        </div>
                     </form>
                 </div>
             </div>
@@ -32,6 +36,7 @@
 
         <script>
 
+            //Adding new word to list on form submission
             $("#newForm").on("submit", function (e) {
                 e.preventDefault();
                 const newWord = $("#newWord").val();
@@ -43,15 +48,23 @@
                 }).done(response => {
                     const words = response;
 
+                    //Looping all words received from query and storing in a string
                     const mappedWords = words.map(word => {
                         return `<li class='word' data-id=${word.id}>${word.words}</li>`
                     }).join("");
 
+                    //Appending all words to the menu list
                     $(".custom-menu ul").empty().append("<li id='addNew'>Add new Word +</li>").append(mappedWords);
+
+                    //If on mobile, provides alert of new word
+                    if ($(window).width() < 725) {
+                        alert("Word Created!");
+                    }
                 })
 
             });
 
+            //Function to delete word from list by clicking DELETE button
             $("#editDelete").on("click", function (e) {
                 e.preventDefault();
                 const id = $("#editWordId").val();
@@ -62,12 +75,15 @@
                 }).done(response => {
                     const words = response;
 
+                    //Looping all words received from response query and storing in a string
                     const mappedWords = words.map(word => {
                         return `<li class='word' data-id=${word.id}>${word.words}</li>`
                     }).join("");
 
+                    //Appending all words to the menu list
                     $(".custom-menu ul").empty().append("<li id='addNew'>Add new Word +</li>").append(mappedWords);
 
+                    //After Deleting word, displays the new word form
                     $(".custom-form h2").html("Add Word");
                     $("#newWord").val("");
                     $("#newForm").show();
@@ -75,39 +91,74 @@
                 })
             });
 
+            //Function to update words
             $("#editUpdate").on("click", function (e) {
                 e.preventDefault();
 
                 const id = $("#editWordId").val();
                 const word = $("#editWord").val();
+
+                //If no word is input, alerts user
+                if (!word) return alert("Word is required");
+
                 $.ajax({
                     type: "PUT",
                     url: "/custom/" + id,
                     data: { word: word.trim() }
                 }).done(response => {
                     const updatedWord = response[0];
+                    //Updates the input with updated word
                     $("#editWord").val(updatedWord.words);
+
+                    //Updates the menu list with the new word
                     $(`ul li[data-id=${id}]`)[0].innerHTML = updatedWord.words;
+
+                    //If on mobile, provides alert of update
+                    if ($(window).width() < 725) {
+                        alert("Updated Word!");
+                    }
                 })
             })
 
+            //Event handler to show edit form when clicking on word
             $(".custom-menu").on("click", ".word", function (e) {
                 $(".custom-form h2").html("Edit Word");
                 $("#editWord").val($(this).html());
                 $("#editWordId").val($(this).attr("data-id"));
                 $("#newForm").hide();
                 $("#editForm").css("display", "flex");
+
+                showMobileForm();
             });
 
+            //Event handler to show new form when clicking on add new
             $(".custom-menu").on("click", "#addNew", function (e) {
                 $(".custom-form h2").html("Add Word");
                 $("#newWord").val("");
                 $("#newForm").show();
                 $("#editForm").hide();
+
+                showMobileForm();
             })
 
+            //Displays word list on mobile
+            $("#customBack").on("click", showMobileList)
 
+            //Checks if on mobile to swap UI
+            function showMobileForm() {
+                if ($(window).width() < 725) {
+                    $(".custom-form").css("display", "flex");
+                    $(".custom-menu").hide();
+                }
+            }
 
+            //Checks if on mobile to swap UI
+            function showMobileList() {
+                if ($(window).width() < 725) {
+                    $(".custom-menu").css("display", "flex");
+                    $(".custom-form").hide();
+                }
+            }
         </script>
 
 

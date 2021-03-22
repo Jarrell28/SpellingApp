@@ -1,6 +1,6 @@
 #play {
     height: 500px;
-    margin: 50px auto 0;
+    margin: 100px auto 0;
     max-width: 1000px;
 }
 
@@ -16,7 +16,8 @@
     display: flex;
     flex-direction: column;
     flex: .3;
-    border-right: 2px solid #25A4E7;
+    min-width: 223px;
+    border-right: 2px solid hsl(201, 80%, 53%);
     height: 100%;
 }
 
@@ -60,6 +61,8 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+    width: 100%;
+    text-align: center;
 }
 
 .play-opening {
@@ -76,6 +79,8 @@
     transform: translate(-50%, -50%);
     font-size: 50px;
     color: #25A4E7;
+    width: 100%;
+    text-align: center;
 }
 
 .play-start {
@@ -103,7 +108,7 @@
 
 #definition {
     font-size: 18px;
-    margin: 15px 0;
+    margin: 30px 0;
 }
 
 #next, #play-again {
@@ -120,6 +125,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    width: 100%;
 }
 
 #spelling {
@@ -141,4 +147,24 @@
     border-bottom-right-radius: 7px;
     height: 40px;
     border: none;
+}
+
+#speaker {
+    cursor: pointer;
+}
+
+.fa-check, .fa-times {
+    font-size: 60px;
+}
+
+.fa-check {
+    color: #0EE70A;
+}
+
+.fa-times {
+    color: #F70707;
+}
+
+#back {
+    display: none;
 }

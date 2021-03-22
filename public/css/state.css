@@ -1,0 +1,62 @@
+
+
+@media screen and (max-width: 775px) {
+    .play-opening h2 {
+        font-size: 30px;
+    }
+
+    #spelling {
+        max-width: 200px;
+    }
+}
+
+@media screen and (max-width: 725px){
+    .play-game {
+        display: none;
+        font-size: 20px;
+    }
+
+    .play-menu {
+        flex: 1;
+        border-right: none;
+        text-align: center;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .play-menu li {
+        border: none;
+        background-color: #25A4E7;
+        color: #fff;
+        margin: 20px 0;
+        padding: 20px;
+    }
+
+    #customBack, #back {
+        display: block;
+    }
+
+    .login-signup {
+        min-width: 320px;
+    }
+
+    .custom-form {
+        display: none;
+    }
+
+    .custom-menu {
+        flex: 1;
+        border-right: none;
+        text-align: center;
+    }
+
+    #newForm , #editForm {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    #newForm input, #editForm input {
+        margin-bottom: 20px;
+    }
+
+}
