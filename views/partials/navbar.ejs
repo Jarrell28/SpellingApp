@@ -5,14 +5,14 @@
             <li>
                 <%= locals.user.username %>
             </li>
-            <% } else { %>
-                <li><a href="/login">Login</a></li>
+            <% } %>
+                <li><a href="/">Home</a></li>
+                <li><a href="/custom">Custom Words</a></li>
+                <% if(locals.user) { %>
+                    <li><a href="/signout">Sign Out</a></li>
+                    <% } else { %>
+                        <li><a href="/login">Login</a></li>
 
-                <% } %>
-                    <li><a href="/favorites">Favorites</a></li>
-                    <li><a href="/custom">Custom Words</a></li>
-                    <% if(locals.user) { %>
-                        <li><a href="/signout">Sign Out</a></li>
-                        <% } %>
+                        <% } %>%>
     </ul>
 </nav>

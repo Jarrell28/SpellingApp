@@ -23,8 +23,8 @@
                     <form id="editForm" action="">
                         <input id="editWord" type="text" placeholder="Word">
                         <input id="editWordId" type="hidden" value="">
-                        <button type="submit">Update</button>
-                        <button type="submit">DELETE</button>
+                        <button id="editUpdate" type="submit">Update</button>
+                        <button id="editDelete" type="submit">DELETE</button>
                     </form>
                 </div>
             </div>
@@ -50,9 +50,48 @@
                     $(".custom-menu ul").empty().append("<li id='addNew'>Add new Word +</li>").append(mappedWords);
                 })
 
+            });
+
+            $("#editDelete").on("click", function (e) {
+                e.preventDefault();
+                const id = $("#editWordId").val();
+
+                $.ajax({
+                    type: "DELETE",
+                    url: "/custom/" + id,
+                }).done(response => {
+                    const words = response;
+
+                    const mappedWords = words.map(word => {
+                        return `<li class='word' data-id=${word.id}>${word.words}</li>`
+                    }).join("");
+
+                    $(".custom-menu ul").empty().append("<li id='addNew'>Add new Word +</li>").append(mappedWords);
+
+                    $(".custom-form h2").html("Add Word");
+                    $("#newWord").val("");
+                    $("#newForm").show();
+                    $("#editForm").hide();
+                })
+            });
+
+            $("#editUpdate").on("click", function (e) {
+                e.preventDefault();
+
+                const id = $("#editWordId").val();
+                const word = $("#editWord").val();
+                $.ajax({
+                    type: "PUT",
+                    url: "/custom/" + id,
+                    data: { word: word.trim() }
+                }).done(response => {
+                    const updatedWord = response[0];
+                    $("#editWord").val(updatedWord.words);
+                    $(`ul li[data-id=${id}]`)[0].innerHTML = updatedWord.words;
+                })
             })
 
-            $(".word").on("click", function (e) {
+            $(".custom-menu").on("click", ".word", function (e) {
                 $(".custom-form h2").html("Edit Word");
                 $("#editWord").val($(this).html());
                 $("#editWordId").val($(this).attr("data-id"));
@@ -60,7 +99,7 @@
                 $("#editForm").css("display", "flex");
             });
 
-            $("#addNew").on("click", function (e) {
+            $(".custom-menu").on("click", "#addNew", function (e) {
                 $(".custom-form h2").html("Add Word");
                 $("#newWord").val("");
                 $("#newForm").show();

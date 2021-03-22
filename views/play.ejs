@@ -3,7 +3,6 @@
         <div class="play-menu">
             <ul>
                 <li id="play-random">Play Random Words</li>
-                <li id="play-favorites">Play Favorites</li>
                 <li id="play-custom">Play Custom</li>
             </ul>
         </div>
@@ -112,22 +111,7 @@
             this.speak();
         }
 
-        //Function to fetch random words
-        getRandom = () => {
-            if (this.playing) return this.resetGame();
-            $(".play-opening").hide();
-            $(".loading").show();
-            $.ajax({
-                method: "GET",
-                url: "/random",
-                success: (res) => {
-                    this.words = res;
-                    console.log(this.words);
-                    $(".loading").hide();
-                    this.startGame();
-                }
-            })
-        }
+
 
         //End of Game
         endGame() {
@@ -148,8 +132,39 @@
             this.startGame();
         }
 
-        //Function to fetch favorite words
+        //Function to fetch random words
+        getRandom = () => {
+            if (this.playing) return this.resetGame();
+            $(".play-opening").hide();
+            $(".loading").show();
+            $.ajax({
+                method: "GET",
+                url: "/random",
+                success: (res) => {
+                    this.words = res;
+                    console.log(this.words);
+                    $(".loading").hide();
+                    this.startGame();
+                }
+            })
+        }
+
         //Function to fetch custom words
+        getCustom = () => {
+            if (this.playing) return this.resetGame();
+            $(".play-opening").hide();
+            $(".loading").show();
+            $.ajax({
+                method: "GET",
+                url: "/custom/game",
+            }).done(response => {
+                if (response.status === "failure") return window.location.href = "/login";
+
+                this.words = response;
+                $(".loading").hide();
+                this.startGame();
+            })
+        }
 
         //Browser API to say currently selected word
         speak = () => {
@@ -165,6 +180,7 @@
 
     //Event handlers
     $("#play-random").on("click", game.getRandom);
+    $("#play-custom").on("click", game.getCustom);
     $("#check").on("click", game.checkSpelling);
     $("#speaker").on("click", game.speak);
     $("#next").on("click", game.nextWord);

@@ -4,6 +4,7 @@ const express = require('express');
 const { Client } = require('pg');
 const axios = require('axios');
 const session = require('express-session');
+const { json } = require("express");
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -125,34 +126,6 @@ app.get('/user/:id', (req, res) => {
     })
 })
 
-//Gets Favorites for active user page
-app.get('/favorites', (req, res) => {
-    if (!req.session.user) {
-        return res.redirect("/login");
-    }
-    const id = req.session.user.id;
-
-    client.query('SELECT * FROM favorites WHERE user_id = $1', [id], (err, results) => {
-        if (err) res.status(400).json({ error: "Error occurred fetching favorites" });
-
-        res.render('favorites', { favorites: res.rows })
-    })
-})
-
-//Get Favorites for active user game
-app.get('/favorites/user', (req, res) => {
-    if (!req.session.user) {
-        return res.redirect("/login");
-    }
-    const id = req.session.user.id;
-
-    client.query('SELECT * FROM favorites WHERE user_id = $1', [id], (err, results) => {
-        if (err) res.status(400).json({ error: "Error occurred fetching favorites" });
-
-        res.status(200).json(results.rows);
-    })
-})
-
 
 //Gets Custom words for page
 app.get('/custom', (req, res) => {
@@ -182,6 +155,8 @@ app.get('/custom/user', (req, res) => {
     })
 })
 
+
+
 //Add custom word for active user
 app.post('/custom/user', (req, res) => {
     if (!req.session.user) {
@@ -197,6 +172,35 @@ app.post('/custom/user', (req, res) => {
             if (err) return console.log(err);
             res.json(results.rows);
         })
+    })
+});
+
+app.delete('/custom/:id', (req, res) => {
+    if (!req.session.user) {
+        return res.redirect("/login");
+    }
+    const id = req.params.id;
+    const userId = req.session.user.id;
+
+    client.query("DELETE FROM custom_sets WHERE id =$1", [id], (err, results) => {
+        if (err) return console.log(err);
+
+        client.query("SELECT * FROM custom_sets WHERE user_id = $1", [userId], (err, results) => {
+            if (err) return console.log(err);
+            res.json(results.rows);
+        })
+    })
+
+});
+
+app.put('/custom/:id', (req, res) => {
+    console.log(req.body);
+    const id = req.params.id;
+    const word = req.body.word;
+
+    client.query("UPDATE custom_sets SET words=$1 WHERE id=$2 RETURNING *", [word, id], (err, results) => {
+        if (err) return console.log(err);
+        res.json(results.rows);
     })
 })
 
@@ -234,7 +238,47 @@ app.get('/random', (req, res) => {
 
 })
 
+//Gets Sets for game
+app.get('/custom/game', (req, res) => {
+    if (!req.session.user) {
+        return res.json({ status: "failure" });
+    }
+    const id = req.session.user.id;
+    const words = [];
+    const promises = [];
 
+    client.query('SELECT * FROM custom_sets WHERE user_id = $1', [id], (err, results) => {
+        if (err) res.status(400).json({ error: "Error occurred fetching sets" });
+
+
+        let rows = results.rows;
+
+        rows.forEach(word => {
+
+            const options = {
+                method: 'GET',
+                url: `https://wordsapiv1.p.rapidapi.com/words/${word.words}`,
+                headers: {
+                    'x-rapidapi-key': process.env.APIKEY,
+                    'x-rapidapi-host': 'wordsapiv1.p.rapidapi.com'
+                }
+            };
+
+            promises.push(
+                axios.request(options).then(function (response) {
+                    words.push(response.data);
+                }).catch(function (error) {
+                    words.push({ word: word.words, results: [{ definition: "Definition not found" }] })
+                })
+            )
+        })
+
+        Promise.all(promises).then(() => res.status(200).json(words));
+
+    })
+
+    // console.log(words);
+})
 
 app.listen(port, () => {
     console.log(`App running on port ${port}.`)

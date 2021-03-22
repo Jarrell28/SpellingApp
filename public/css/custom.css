@@ -88,3 +88,7 @@
 #editForm {
     display: none;
 }
+
+#editUpdate {
+    margin-right: 10px;
+}

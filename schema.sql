@@ -6,17 +6,6 @@ CREATE TABLE users (
     password VARCHAR(255) NOT NULL
 );
 
-DROP TABLE IF EXISTS favorites;
-CREATE TABLE favorites (
-    ID SERIAL PRIMARY KEY,
-    favorites TEXT,
-    user_id INT NOT NULL,
-    CONSTRAINT fk_favorite_user 
-        FOREIGN KEY (user_id)
-            REFERENCES users (ID) 
-            ON DELETE CASCADE
-);
-
 DROP TABLE IF EXISTS custom_sets;
 
 CREATE TABLE custom_sets (
