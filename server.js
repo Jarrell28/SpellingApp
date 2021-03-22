@@ -17,7 +17,11 @@ app.use(session({ secret: process.env.SESSIONSECRET }))
 app.set('view engine', 'ejs');
 
 //Connecting to Database
-const client = new Client();
+const client = new Client({
+    ssl: {
+        rejectUnauthorized: false,
+    }
+});
 client.connect(err => {
     if (err) {
         console.error('connection error', err.stack);
