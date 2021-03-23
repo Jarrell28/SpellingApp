@@ -19,7 +19,7 @@ app.set('view engine', 'ejs');
 //Connecting to Database
 const client = new Client({
     ssl: {
-        rejectUnauthorized: false,
+        rejectUnauthorized: false, //Required for production. Remove on local
     }
 });
 client.connect(err => {

@@ -1,25 +1,43 @@
-Project Description
+#Speller
 
-#Application main purpose is to help people improve their spelling
+Speller is a spelling application that helps people improve their spelling. 
 
-#Features
-1. Able to create an account or play as guest
-2. Able to create custom word sets
+##Features
+
+1. Able to create an account
+2. Able to create custom word sets for users with an account
 3. Can play with randomly generated words
-4. Able to favorite random words
-5. Flashcards - enter complete word and submit to check if its correct
-6. Word by Word check - User gets indication if correct by letter input
-7. View Custom sets created by other users
 
-#API
+##Technologies Used
+
+1. HTML/EJS - Embedded Javascript Templates
+2. CSS/Bootstrap/Font Awesome
+3. Javascript/Jquery
+4. NodeJS/ExpressJS/Express Session
+5. PostgreSQL/node-postgres
+6. Axios
+
+##API
+
 Uses the wordsapi to get random words and definitions
-Can get random words
-Can get definition of words
-Can get how frequent the word is used
-Can get pronunciation
-https://www.wordsapi.com/docs/
+https://www.wordsapi.com/docs
 
-#Database design
-Users table - id, username, email, password, relationships [ favorites, custom sets]
-Favorites table - id, wordname, 
-Custom Sets table - id, string of words
+
+##Database design
+
+Users table - id, username, email, password
+Custom Sets table - id, words, user_id(relationship with Users table)
+
+##Install Locally
+
+In order to use the application locally, there are a few things required.
+
+1. Local PostgreSQL Database is required for the application following setup in schema.sql
+2. .env file is required in the root of the application with the following variables
+    PGUSER="User of DB"
+    PGHOST="Host of DB"
+    PGDATABASE="Name of DB"
+    PGPASSWORD="Password for DB"
+    PGPORT="Port of DB"
+    APIKEY="API key for wordsapi"
+    SESSIONSECRET="any text for express-session library"
